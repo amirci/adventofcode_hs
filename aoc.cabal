@@ -18,6 +18,8 @@ test-suite spec
     ,QuickCheck
     ,text
     ,containers
+    ,pureMD5
+    ,bytestring
   hs-source-dirs:
     test
     src
