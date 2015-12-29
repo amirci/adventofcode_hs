@@ -4,22 +4,28 @@ import qualified Data.Text as T
 import Data.List
 import qualified Data.Set as Set
 
+type Address = (Int, Int)
 
-countPresents :: String -> Int
-countPresents path = houses (0, 0) (Set.singleton (0, 0)) path
+santaHouses :: String -> Int
+santaHouses path = Set.size $ visitHouses path
+
+
+visitHouses :: String -> Set.Set Address
+visitHouses path = Set.fromList visited 
   where 
-    houses last history []     = Set.size history
-    houses last older   (x:xs) = cc (adjust last x) older xs
-    cc next older xs = houses next (Set.insert next older) xs
-    adjust (x, y) '^' = (x+1, y)
-    adjust (x, y) 'v' = (x-1, y)
-    adjust (x, y) '>' = (x, y+1)
-    adjust (x, y) '<' = (x, y-1)
-    adjust (x, y) _ = (x, y)
+    visited = foldl addresses [(0, 0)] deltas
+    addresses (last:rest) delta = (last `nextHouse` delta):last:rest
+    deltas = map dir path
+    nextHouse (a, b) (c, d) = (a+c, b+d)
+    dir '^' = (1 , 0)
+    dir 'v' = (-1, 0)
+    dir '>' = (0 , 1)
+    dir '<' = (0 , -1)
+    dir  _  = (0 , 0)
 
-
-fromFile :: String -> IO Int
-fromFile fileName = do
-  contents <- readFile fileName
-  return $ countPresents contents
-  
+robotHouses :: String -> Int
+robotHouses path = Set.size $ foldl1 Set.union $ map visitHouses $ splitPaths path ([], [])
+  where
+    splitPaths [] (p1, p2) = [p1, p2]
+    splitPaths (x:[]) (p1, p2) = [p1 ++ [x], p2]
+    splitPaths (x:y:xs) (p1, p2) = splitPaths xs (p1 ++ [x], p2 ++ [y])
