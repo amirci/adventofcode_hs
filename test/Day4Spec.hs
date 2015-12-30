@@ -21,17 +21,22 @@ spec = do
   let mining6 = mining swz6
   let minHashAt num swz (i, h) = num == i && swz h
 
-  describe "Mining adventcoins with 5 zeroes" $ do
-    it "Returns 609043 for abcdef key" $ do
-      mining5 "abcdef" `shouldSatisfy` minHashAt 609043 swz5
-    
-    it "Returns 1048970 for pqrstuv key" $ do
-      mining5 "pqrstuv" `shouldSatisfy` minHashAt 1048970 swz5 
+  describe "Starts with zeros" $ do
+    it "Returns true when starts with zeroes" $ do
+      swz5 "00000asdfasf" `shouldBe` True
 
-    it "Returns 254575 for bgvyzdsv key" $ do
-      mining5 "bgvyzdsv" `shouldSatisfy` minHashAt 254575 swz5
-
-  describe "Mining adventcoins with 6 zeroes" $ do
-    it "Returns 1038736 for bgvyzdsv key" $ do
-      mining6 "bgvyzdsv" `shouldSatisfy` minHashAt 1038736 swz6
-
+-- 
+--   describe "Mining adventcoins with 5 zeroes" $ do
+--     it "Returns 609043 for abcdef key" $ do
+--       mining5 "abcdef" `shouldSatisfy` minHashAt 609043 swz5
+--     
+--     it "Returns 1048970 for pqrstuv key" $ do
+--       mining5 "pqrstuv" `shouldSatisfy` minHashAt 1048970 swz5 
+-- 
+--     it "Returns 254575 for bgvyzdsv key" $ do
+--       mining5 "bgvyzdsv" `shouldSatisfy` minHashAt 254575 swz5
+-- 
+--   describe "Mining adventcoins with 6 zeroes" $ do
+--     it "Returns 1038736 for bgvyzdsv key" $ do
+--       mining6 "bgvyzdsv" `shouldSatisfy` minHashAt 1038736 swz6
+-- 
