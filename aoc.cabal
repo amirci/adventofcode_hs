@@ -20,6 +20,8 @@ test-suite spec
     ,containers
     ,pureMD5
     ,bytestring
+    ,regex-posix
+    ,split
   hs-source-dirs:
     test
     src
