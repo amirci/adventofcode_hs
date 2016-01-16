@@ -28,7 +28,7 @@ spec = do
     -- Belfast -> London -> Dublin = 982
     -- The shortest of these is London -> Dublin -> Belfast = 605
 
-    it "Returns 11 for 1" $ do
+    it "Returns the shortest passing for all cities" $ do
       let paths = [ mkPath "London to Dublin = 464"
                   , mkPath "London to Belfast = 518"
                   , mkPath "Dublin to Belfast = 141"
@@ -39,4 +39,18 @@ spec = do
       contents <- readFile "test/day9.input.txt"
       let cities = map mkPath $ lines contents
       shortest cities `shouldBe` 207
+
+  describe "The longest path" $ do
+
+    it "Returns the longest passing for all cities" $ do
+      let paths = [ mkPath "London to Dublin = 464"
+                  , mkPath "London to Belfast = 518"
+                  , mkPath "Dublin to Belfast = 141"
+                  ]
+      longest paths `shouldBe` 982
+
+    it "reads the longest form file" $ do
+      contents <- readFile "test/day9.input.txt"
+      let cities = map mkPath $ lines contents
+      longest cities `shouldBe` 804
 

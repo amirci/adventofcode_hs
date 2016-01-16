@@ -18,15 +18,19 @@ mkPath str = parse $ splitOn " " str
   where parse (c1:"to":c2:"=":dist:[]) = (c1, c2, read dist :: Int)
 
 shortest :: [Path] -> Int
-shortest paths = minimum $ map fromJust $ actual
+shortest paths = minimum $ distances paths
+
+longest :: [Path] -> Int
+longest paths = maximum $ distances paths
+
+distances :: [Path] -> [Int]
+distances paths = map fromJust $ actual
   where
     sumDists path = fmap sum $ sequence path
     reachable (a:b:[]) = [Map.lookup (a, b) dists]
     reachable (a:b:xs) = (Map.lookup (a, b) dists) : (reachable (b:xs))
     actual = filter isJust $ map (sumDists . reachable) allPaths 
-    allPaths = permutations $ MMap.keys dests
-    insert (c1, c2, dist) = MMap.insert c2 (c1, dist) . MMap.insert c1 (c2, dist)
-    minst (c1, c2, dist) = Map.insert (c1, c2) dist . Map.insert (c2, c1) dist
-    dests = foldr insert MMap.empty paths
-    dists = foldr minst Map.empty paths
+    allPaths = permutations $ nub $ fst $ unzip $ Map.keys dists
+    inst (c1, c2, dist) = Map.insert (c1, c2) dist . Map.insert (c2, c1) dist
+    dists = foldr inst Map.empty paths
 
