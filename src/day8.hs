@@ -19,3 +19,10 @@ escape ('\\':'x':a:b:xs) = hexChar:(escape xs)
   where hexChar = chr $ fst $ head $ readHex $ a:b:[]
 escape (a:xs) = a:(escape xs)
 
+encode :: String -> String
+encode s = "\"" ++ encode' s ++ "\""
+  where
+    encode' [] = []
+    encode' ('\\':xs) = "\\\\" ++ encode' xs
+    encode' ('\"':xs) = "\\\"" ++ encode' xs
+    encode' (a:xs) = a:(encode' xs)
