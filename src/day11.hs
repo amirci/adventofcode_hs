@@ -1,11 +1,11 @@
 module Day11 where
 
+import Data.List
+import Data.Maybe
 
 changePwd :: String -> String
-changePwd str = case validPwd next of
-  True  -> next
-  False -> changePwd next
-  where next = succPwd str
+changePwd str = fromJust $ find validPwd $ passwords
+  where passwords = iterate succPwd $ succPwd str
 
 succPwd :: String -> String
 succPwd str = reverse $ succ' $ reverse str
@@ -15,9 +15,8 @@ succPwd str = reverse $ succ' $ reverse str
     succ' []       = []
 
 validPwd :: String -> Bool
-validPwd str = and $ map apply [straight, (> 1) . pairCount, valid]
+validPwd str = and $ map ($ str) [straight, (> 1) . pairCount, valid]
   where
-    apply fn = fn str
     valid s = not $ any (\c -> elem c s) "iol"
     straight (a:b:c:xs) = (succ a == b && succ b == c) || straight (b:c:xs)
     straight _ = False
