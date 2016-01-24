@@ -51,5 +51,5 @@ spec =do
 
     it "sums all the numbers from the JSON file" $ do
       contents <- readFile "test/day12.input.txt"
-      ignoreRed contents `shouldBe` 156366
+      ignoreRed contents `shouldBe` 96852
 

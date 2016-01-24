@@ -23,7 +23,10 @@ test-suite spec
     ,regex-compat
     ,split
     ,multimap
-    ,parsec
+    ,aeson
+    ,unordered-containers
+    ,scientific
+    ,vector
   hs-source-dirs:
     test
     src
