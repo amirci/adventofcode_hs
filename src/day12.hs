@@ -16,7 +16,7 @@ countJSON str = process $ matchRegexAll aNumber str
   where
     aNumber = mkRegex "(-?[0-9]+)"
     process Nothing = 0.0
-    process (Just (_, n, rest, _)) = (read n :: Double) + countJSON rest
+    process (Just (_, n, rest, _)) = read n + countJSON rest
 
 ignoreRed :: String -> Int
 ignoreRed str = parse $ fromJust $ decode $ BS.pack str

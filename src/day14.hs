@@ -8,7 +8,7 @@ speed (a, _, _) = a
 fly :: Reindeer -> Int
 fly (_, b, _) = b
 
-rest :: Raindeer -> Int
+rest :: Reindeer -> Int
 rest (_, _, c) = c
 
 mkRd :: Int -> Int -> Int -> Reindeer
@@ -19,4 +19,8 @@ longest rdrs kms = maximum $ map dist rdrs
   where dist = flip distance kms
 
 distance :: Reindeer -> Int -> Int
-distance rd kms = 0
+distance rd@(speed, fly, resting) kms = times * fly * speed + lastFly * speed
+  where
+    (times, rest) = divMod kms (fly + resting)
+    lastFly = min rest fly
+  
