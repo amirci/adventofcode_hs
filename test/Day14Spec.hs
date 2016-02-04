@@ -35,8 +35,8 @@ spec = do
       points [dancer, comet] 400 `shouldBe` [(dancer, 289), (comet, 111)]
       points [dancer, comet] 500 `shouldBe` [(dancer, 307), (comet, 193)]
 
-    -- it "returns the winner after 2503 seconds" $ do
-    --  winner reindeers 2503 `shouldBe` (donner, 1072)
+    it "returns the winner after 2503 seconds" $ do
+      winner reindeers 2503 `shouldBe` (donner, 1102)
 
   context "distance calculations" $ do
     describe "Calculates the distance" $ do
