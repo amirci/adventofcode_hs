@@ -2,7 +2,6 @@ module Day14 where
 
 import Data.Ord
 import Data.List
-import Debug.Trace
 
 type Reindeer = (Int, Int, Int)
 
@@ -10,8 +9,8 @@ mkRd :: Int -> Int -> Int -> Reindeer
 mkRd speed fly rest = (speed, fly, rest)
 
 longest :: [Reindeer] -> Int -> Int
-longest rdrs kms = maximum $ map dist rdrs
-  where dist = flip distance kms
+longest rdrs seconds = maximum $ map dist rdrs
+  where dist = flip distance seconds
 
 distance :: Reindeer -> Int -> Int
 distance rd@(speed, fly, resting) seconds = times * fly * speed + lastFly * speed

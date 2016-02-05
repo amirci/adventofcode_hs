@@ -16,19 +16,16 @@ main = hspec spec
 spec :: Spec
 spec = do
 
-  describe "Calculates highest cookie" $ do
-    -- Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8
-    -- Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3
-    let buts = (-1, -2, 6, 3)
-    let cinn = (2, 3, -2, -1)
+  describe "Calculates highest cookie score" $ do
 
-    it "Calculates the highest score" $ do
-      highest [buts, cinn] `shouldBe` 62842880
+    context "using the example tests" $ do
+      -- Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8
+      -- Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3
+      let buts = (-1, -2, 6, 3)
+      let cinn = (2, 3, -2, -1)
 
-    it "Calculates the highest score with frosting" $ do
-      let frosting = (4, -2, 0, 0) -- Frosting: capacity 4, durability -2, flavor 0, texture 0, calories 5
-      let candy    = (0, 5, -1, 0) -- Candy: capacity 0, durability 5, flavor -1, texture 0, calories 8
-      highest [frosting, candy] `shouldBe` 62842880
+      it "Calculates the highest score" $ do
+        highest [buts, cinn] `shouldBe` 62842880
 
     context "reading ingredients from the file" $ do
       let frosting = (4, -2, 0, 0) -- Frosting: capacity 4, durability -2, flavor 0, texture 0, calories 5
