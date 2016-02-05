@@ -8,14 +8,12 @@ import Data.Ord
 type Ingredient = (Int, Int, Int, Int)
 
 highest :: [Ingredient] -> Int
-highest ingrds = maximum $ map score combinations
+highest ingrds = maximum $ map score1 combinations
   where
     combinations = filter validQtts $ replicateM (length ingrds) [1..99]
-    score = mulIgr . sumIgr . updateQtts
-    validQtts = (== 100) . sum
-    updateQtts = zipWith updateQt ingrds 
-    updateQt (cap, dur, fl, tex) qt = [cap*qt, dur*qt, fl*qt, tex*qt]
-    -- sumIgr = zipWith ((max 0) . (+))
-    sumIgr = foldl1 $ zipWith (\a b -> max 0 (a+b)) 
-    mulIgr = foldl1 (*)
+      where validQtts = (== 100) . sum
 
+    score1 qtts = product $ map ((`max` 0) . dotProduct) $ transpose ingList
+      where
+        dotProduct b = sum $ zipWith (*) qtts b
+        ingList = map (\(a, b,c, d) -> [a, b, c, d]) ingrds

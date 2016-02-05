@@ -35,4 +35,5 @@ spec = do
       let igrds = [frosting, candy, buts, cinn]
 
       it "Calculates the highest score" $ do
-        highest igrds `shouldBe` 1
+        highest igrds `shouldBe` 18965440
+
