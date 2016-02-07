@@ -25,23 +25,36 @@ spec = do
 
   describe "Finding the aunt" $ do
 
-    it "finds nothing" $ do
-      let aunts = []
-      let compound = empty
-      findAunt aunts compound `shouldBe` Nothing
+    let eq = (==) :: Int -> Int -> Bool
+    let sample = Compound { children = eq 3
+                            , cats        = eq 7
+                            , samoyeds    = eq 2
+                            , pomeranians = eq 3
+                            , akitas      = eq 0
+                            , vizslas     = eq 0
+                            , goldfish    = eq 5
+                            , trees       = eq 3
+                            , cars        = eq 2
+                            , perfumes    = eq 1
+                          }
 
-    it "finds the aunt index from the input file" $ do
-      contents <- readFile "test/day16.input.txt"
-      let aunts = lines contents
-      let compound = Compound { children= Just 3
-                                , cats= Just 7
-                                , samoyeds= Just 2
-                                , pomeranians= Just 3
-                                , akitas= Just 0
-                                , vizslas= Just 0
-                                , goldfish= Just 5
-                                , trees= Just 3
-                                , cars= Just 2
-                                , perfumes= Just 1
-                              }
-      findAunt aunts compound `shouldBe` Just 3
+    context "using equality for the sample" $ do
+      it "finds the aunt index from the input file" $ do
+        contents <- readFile "test/day16.input.txt"
+        let aunts = lines contents
+        -- is actually zero based so it is 103
+        findAunt aunts sample `shouldBe` Just 102 
+        
+    context "using the retroencabulator for the sample" $ do
+      let sample2 = sample { cats = (> 7)
+                            , trees = (> 3)
+                            , pomeranians = (< 3)
+                            , goldfish = (< 5)
+                          }
+
+      it "finds the aunt index from the input file" $ do
+        contents <- readFile "test/day16.input.txt"
+        let aunts = lines contents
+        -- is actually zero based so it is 405
+        findAunt aunts sample2 `shouldBe` Just 404 
+

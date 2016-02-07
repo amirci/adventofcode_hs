@@ -4,24 +4,25 @@ import Data.Maybe
 import Data.List.Split
 import Data.List
 
-data Compound = Compound { children :: Maybe Int
-                          , cats :: Maybe Int
-                          , samoyeds :: Maybe Int
-                          , pomeranians :: Maybe Int
-                          , akitas :: Maybe Int
-                          , vizslas :: Maybe Int
-                          , goldfish :: Maybe Int
-                          , trees :: Maybe Int
-                          , cars :: Maybe Int
-                          , perfumes :: Maybe Int
-                        } deriving (Show, Eq)
+data Compound t = Compound { children :: t
+                   , cats :: t
+                   , samoyeds :: t
+                   , pomeranians :: t
+                   , akitas :: t
+                   , vizslas :: t
+                   , goldfish :: t
+                   , trees :: t
+                   , cars :: t
+                   , perfumes :: t
+                 } deriving (Show, Eq)
 
-type Aunt = Compound
+type Sample = Compound (Int -> Bool)
+type Aunt = Compound (Maybe Int)
 
-empty :: Compound
+empty :: Aunt
 empty = Compound Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
 
-toList :: Compound -> [Maybe Int]
+toList :: Compound t -> [t]
 toList cmp = [ children cmp
               , cats cmp
               , samoyeds cmp
@@ -34,28 +35,31 @@ toList cmp = [ children cmp
               , perfumes cmp
             ]
 
-findAunt :: [String] -> Compound -> Maybe Int
+findAunt :: [String] -> Sample -> Maybe Int
 findAunt aunts cmp = findIndex (same . parse) aunts
   where
     cmpList = toList cmp
-    same aunt = and $ catMaybes $ zipWith sameField (toList aunt) cmpList
-    sameField f1 f2 = (==) <$> f1 <*> f2
+    same aunt = and $ catMaybes $ zipWith (<$>) cmpList (toList aunt)
 
-parse :: String -> Compound
-parse line = parse' empty $ drop 2 $ splitOn " " line
+parse :: String -> Aunt
+parse line = parse' empty tokens
   where
-    parse' comp [] = comp
-    parse' comp (field:n:xs) = parse' updated xs
-      where updated = parse'' comp (init field) $ Just $ read (head $ splitOn "," n)
+    tokens = drop 2 $ splitOn " " line
 
-    parse'' comp "cats" n = comp { cats = n }
-    parse'' comp "children" n = comp { children = n }
-    parse'' comp "samoyeds" n = comp { samoyeds = n }
-    parse'' comp "pomeranians" n = comp { pomeranians = n }
-    parse'' comp "akitas" n      = comp { akitas = n }
-    parse'' comp "vizslas" n     = comp { vizslas = n }
-    parse'' comp "goldfish" n    = comp { goldfish = n }
-    parse'' comp "trees" n       = comp { trees = n }
-    parse'' comp "cars" n        = comp { cars = n }
-    parse'' comp "perfumes" n    = comp { perfumes = n }
-    
+    parse' aunt [] = aunt
+    parse' aunt (field:n:xs) = parse' updated xs
+      where 
+        val = Just $ read $ head $ splitOn "," n
+        updated = parse'' (init field) val
+
+        parse'' "cats" n        = aunt { cats = n }
+        parse'' "children" n    = aunt { children = n }
+        parse'' "samoyeds" n    = aunt { samoyeds = n }
+        parse'' "pomeranians" n = aunt { pomeranians = n }
+        parse'' "akitas" n      = aunt { akitas = n }
+        parse'' "vizslas" n     = aunt { vizslas = n }
+        parse'' "goldfish" n    = aunt { goldfish = n }
+        parse'' "trees" n       = aunt { trees = n }
+        parse'' "cars" n        = aunt { cars = n }
+        parse'' "perfumes" n    = aunt { perfumes = n }
+        
