@@ -27,3 +27,11 @@ spec = do
         contents <- readFile "test/day17.input.txt"
         let ctnrs = map (read :: String -> Int) $ lines contents
         storeEggnog 150 ctnrs `shouldBe` 1638
+
+  describe "Minimum containers" $ do
+    context "using the file" $ do
+      it "calculates minimum containers for 150 liters" $ do
+        contents <- readFile "test/day17.input.txt"
+        let ctnrs = map (read :: String -> Int) $ lines contents
+        storeMin 150 ctnrs `shouldBe` 17
+
