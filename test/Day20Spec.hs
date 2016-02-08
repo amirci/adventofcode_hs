@@ -26,7 +26,17 @@ spec = do
 -- House 8 got 150 presents.
 -- House 9 got 130 presents.
 
-  describe "Delivers presents" $ do
+  context "using the sample" $ do
     it "returns 10 for house # 1" $ do
-      elves 1 `shouldBe` 10
+      presents !! 0 `shouldBe` 10
+    it "returns 70 for house # 4" $ do
+      presents !! 3 `shouldBe` 70
+    it "returns 130 for house # 9" $ do
+      presents !! 8 `shouldBe` 130
+
+  context "using the problem input" $ do
+
+    it "returns the lowest house for 33100000" $ do
+      -- part1 33100000 `shouldBe` 776160
+      lowestHouse 33100000 `shouldBe` 776160
 
