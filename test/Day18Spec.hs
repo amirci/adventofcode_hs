@@ -62,3 +62,32 @@ spec = do
           let evolution = (iterate evolve board) !! 100
           lightCount evolution `shouldBe` 768
 
+  describe "part B" $ do
+    let keepCorners = cornersOn . evolve
+
+    context "using the sample scenario" $ do
+      let board = mkBoard ["##.#.#"
+                          ,"...##."
+                          ,"#....#"
+                          ,"..#..."
+                          ,"#.#..#"
+                          ,"####.#"]
+
+      let step1 = mkBoard ["#.##.#"
+                          ,"####.#"
+                          ,"...##."
+                          ,"......"
+                          ,"#...#."
+                          ,"#.####"]
+
+      it "evolves with corners" $ do
+        keepCorners board `shouldBe` step1
+
+
+    context "reading from the file" $ do
+      it "Has 781 lights after 100 evolutions" $ do
+        contents <- readFile "test/day18.input.txt"
+        let board = mkBoard $ lines contents
+        let evolution = iterate keepCorners board !! 100
+        lightCount evolution `shouldBe` 781
+

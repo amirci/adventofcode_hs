@@ -38,3 +38,12 @@ evolve (rows, cols, cells) = (rows, cols, newCells)
         freq cells = [(head x, length x) | x <- group $ sort cells]
         inRange ((r, c), _) = r > 0 && r <= rows && c > 0 && c <= cols
 
+cornersOn :: Board -> Board
+cornersOn (r, c, cells) = (r, c, updated)
+  where
+    updated = sort $ foldl turnOn cells corners
+    corners = [(i, j) | i <- [1, r], j <- [1, c]]
+    turnOn cells cell
+      | cell `elem` cells = cells
+      | otherwise = cell:cells
+
