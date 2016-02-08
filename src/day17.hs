@@ -6,12 +6,13 @@ import Data.List
 type Containers = [Int]
 
 storeEggnog :: Int -> Containers -> Int
-storeEggnog ltrs ctnrs = length $ fitting ltrs ctnrs
+storeEggnog ltrs = length . fitting ltrs
 
 fitting :: Int -> Containers -> [Containers]
 fitting ltrs = filter ((== ltrs) . sum) . subsequences 
 
 storeMin :: Int -> Containers -> Int
-storeMin ltrs ctnrs = length $ filter ((==) min . length) $ fitting ltrs ctnrs
+storeMin ltrs ctnrs = length $ filter ((==) min . length) fit
   where
-    min = minimum $ map length $ fitting ltrs ctnrs
+    fit = fitting ltrs ctnrs 
+    min = minimum $ map length fit
