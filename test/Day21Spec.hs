@@ -15,10 +15,14 @@ main = hspec spec
 
 spec :: Spec
 spec = do
-  describe "minimum gold" $ do
-    let myself = Player { hp=100, damp=0, armorp=0 }
-    let other  = Player { hp=104, damp=8, armorp=1 }
+  let myself = Player { hp=100, damp=0, armorp=0 }
+  let other  = Player { hp=104, damp=8, armorp=1 }
 
-
+  describe "minimum gold winnineg" $ do
     it "calculates the min gold to win" $ do
       minGold myself other `shouldBe` 78
+
+  describe "maximum gold loosing" $ do
+    it "calculates the max gold when loosing" $ do
+      maxGold myself other `shouldBe` 148
+

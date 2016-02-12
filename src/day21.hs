@@ -3,6 +3,7 @@ module Day21 where
 import Data.List
 import Data.Ord
 import Data.Maybe
+import Debug.Trace
 
 data Player = Player { hp::Int, damp::Int, armorp::Int }
 
@@ -33,14 +34,23 @@ minGold p1 p2 = fst $ minimumBy (comparing fst) $ filter p1Won rounds
     p1Won (_, (hp1, hp2)) = hp2 <= 0
     rounds = map battle' armory
 
+maxGold :: Player -> Player -> Int
+maxGold p1 p2 = fst $ maximumBy (comparing fst) $ filter p2Won rounds
+  where
+    battle' = battle p1 p2
+    p2Won (_, (hp1, hp2)) = hp1 <= 0
+    rounds = map battle' armory
+
 battle :: Player -> Player -> [Item] -> (Int, (Int, Int))
 battle Player{hp=hp1}
        Player{hp=hp2, damp=damP2, armorp=armrP2}
        items
-       = (cost, round)
+       = (cost, (finalHp1, finalHp2))
   where
     [cost, damg, armr] = map sum $ transpose items
-    round = fromJust $ find aWinner $ iterate battle' (hp1, hp2)
+    (finalHp1, finalHp2, _) = fromJust $ find aWinner $ iterate battle' (hp1, hp2, True)
     [p1Dmg, p2Dmg] = map (max 1) [damP2 - armr, damg - armrP2]
-    aWinner (a, b) = a <= 0 || b <= 0
-    battle' (hp1, hp2) = (hp1 - p1Dmg, hp2 - p2Dmg)
+    aWinner (a, b, _) = a <= 0 || b <= 0
+    battle' (hp1, hp2, turn)
+      | not turn = (hp1 - p1Dmg, hp2, not turn)
+      | turn = (hp1, hp2 - p2Dmg, not turn)
