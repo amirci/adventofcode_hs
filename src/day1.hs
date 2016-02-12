@@ -2,9 +2,11 @@ module Day1 where
 
 
 day1 :: String -> Int
-day1 ('(':xs) =  1 + day1 xs
-day1 (')':xs) = -1 + day1 xs
-day1 _  = 0
+day1 = sum . map openClose
+  where 
+    openClose '(' = 1
+    openClose ')' = -1
+    openClose _   = 0
 
 
 basementPos :: String -> Int

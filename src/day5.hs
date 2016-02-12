@@ -2,7 +2,7 @@ module Day5 where
 
 import Data.List
 import Data.Maybe
-import Debug.Trace
+import Control.Monad
 
 -- It contains at least three vowels (aeiou only), like aei, xazegov, or
 -- aeiouaeiouaeiou.  It contains at least one letter that appears twice in a
@@ -12,17 +12,18 @@ import Debug.Trace
 
 data Behaviour = Nice | Naughty deriving (Eq, Show)
 
+(.&&.) :: (a -> Bool) -> (a -> Bool) -> (a -> Bool)
+(.&&.) = liftM2 (&&)
+
 niceStr :: String -> Behaviour
 niceStr str 
-  | niceRules = Nice
+  | isNice str = Nice
   | otherwise = Naughty
   where
-    niceRules = not rejected && atLeast3Vowels && doubleLetter
-    rejected = any (\s -> isInfixOf s str) undesirable
-    undesirable = ["ab", "cd", "pq", "xy"]
-    atLeast3Vowels = (>= 3) $ length $ filter isVowel str
-    doubleLetter = any (>= 2) $ map length $ group str
-    isVowel c = elem c "aeiou"
+    isNice = desirable .&&. threeVowels .&&. doubleLetter
+    desirable str = not $ any (flip isInfixOf str) ["ab", "cd", "pq", "xy"]
+    threeVowels = (>= 3) . length . filter (flip elem "aeiou")
+    doubleLetter = any ((>= 2) . length) . group
 
 -- It contains a pair of any two letters that appears at least twice in the
 -- string without overlapping, like xyxy (xy) or aabcdefgaa (aa), but not like
@@ -53,9 +54,7 @@ countNice :: (String->Behaviour) -> String -> IO Int
 countNice fn fileName = do
   content <- readFile fileName
   return $ length $ filter nice $ lines content
-  where 
-    nice = (== Nice) . fn
-    -- printIt s = trace ("-- " ++ s ++ " " ++ (tos $ fn s)) (nice s)
+  where nice = (== Nice) . fn
 
 
 

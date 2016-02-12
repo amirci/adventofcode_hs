@@ -24,15 +24,17 @@ spec = do
       validPwd "hijklmmn" `shouldBe` False
 
   describe "Calculate the next password" $ do
-    it "returns xxx for abcdefgh" $ do
+    it "returns abcdffaa for abcdefgh" $ do
       changePwd "abcdefgh" `shouldBe` "abcdffaa"
 
-    it "returns xxx because skips ghi" $ do
+    it "returns ghjaabcc because skips ghi" $ do
       changePwd "ghijklmn" `shouldBe` "ghjaabcc"
+
+    it "returns after two iterations" $ do
+      let two = iterate changePwd "cqjxjnds" !! 2
+      two `shouldBe` "cqkaabcc"
 
     it "returns for the puzzle input" $ do
       changePwd "cqjxjnds" `shouldBe` "cqjxxyzz"
 
-    it "returns after two expiriations" $ do
-      (changePwd $ changePwd "cqjxjnds") `shouldBe` "cqkaabcc"
 

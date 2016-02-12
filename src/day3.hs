@@ -1,19 +1,16 @@
 module Day3 where
 
-import qualified Data.Text as T
 import Data.List
 import qualified Data.Set as Set
 
 type Address = (Int, Int)
 
 santaHouses :: String -> Int
-santaHouses path = Set.size $ visitHouses path
-
+santaHouses = Set.size . visitHouses
 
 visitHouses :: String -> Set.Set Address
-visitHouses path = Set.fromList visited 
+visitHouses path = Set.fromList $ foldl addresses [(0, 0)] deltas
   where 
-    visited = foldl addresses [(0, 0)] deltas
     addresses (last:rest) delta = (last `nextHouse` delta):last:rest
     deltas = map dir path
     nextHouse (a, b) (c, d) = (a+c, b+d)

@@ -1,7 +1,7 @@
 module Day2 where
 
-import qualified Data.Text as T
 import Data.List
+import Data.List.Split
 
 type Present = (Int, Int, Int)
 
@@ -20,15 +20,14 @@ ribbon (h, l, w) = wrapping + bow
     bow = h * l * w
 
 
-fromFile :: (Present->Int) -> String -> IO Int
+fromFile :: (Present -> Int) -> String -> IO Int
 fromFile fn fileName = do
   contents <- readFile fileName
   return $ sum $ map (fn . readPresent) $ lines contents
 
   where
-    separator = T.pack "x"
-    toInts = (read::String->Int) . T.unpack
-    readPresent = tuplify . map toInts . T.splitOn separator . T.pack
+    separator = "x"
+    toInts = read :: String -> Int
+    readPresent = tuplify . map toInts . splitOn separator
     tuplify (a:b:c:[]) = (a, b, c)
-    tuplify _ = (0, 0, 0)
 
