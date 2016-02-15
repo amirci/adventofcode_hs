@@ -8,6 +8,12 @@ import Debug.Trace
 data Player = Player { hp::Int, damp::Int, armorp::Int }
 
 type Item = [Int]
+type Cost = Int
+type Score = (Int, Int)
+type Round = (Cost, Score)
+
+byCost :: Round -> Cost
+byCost = fst
 
 mkQ :: Int -> Int -> Int -> Item
 mkQ a b c = [a, b, c]
@@ -28,26 +34,26 @@ armory = [ [w, a, r1, r2] |
   where zero = [0,0,0]
 
 minGold :: Player -> Player -> Int
-minGold p1 p2 = fst $ minimumBy (comparing fst) $ filter p1Won rounds
-  where
-    battle' = battle p1 p2
-    p1Won (_, (hp1, hp2)) = hp2 <= 0
-    rounds = map battle' armory
+minGold p1 p2 = fst $ minimumBy (comparing byCost) $ filter p1Won $ rounds p1 p2
+  where p1Won (_, (hp1, hp2)) = hp2 <= 0
 
 maxGold :: Player -> Player -> Int
-maxGold p1 p2 = fst $ maximumBy (comparing fst) $ filter p2Won rounds
-  where
-    battle' = battle p1 p2
-    p2Won (_, (hp1, hp2)) = hp1 <= 0
-    rounds = map battle' armory
+maxGold p1 p2 = fst $ maximumBy (comparing byCost) $ filter p2Won $ rounds p1 p2
+  where p2Won (_, (hp1, hp2)) = hp1 <= 0
 
-battle :: Player -> Player -> [Item] -> (Int, (Int, Int))
-battle Player{hp=hp1}
-       Player{hp=hp2, damp=damP2, armorp=armrP2}
-       items
-       = (cost, (finalHp1, finalHp2))
+rounds :: Player -> Player -> [Round]
+rounds p1 p2 = map battle' armory
   where
-    [cost, damg, armr] = map sum $ transpose items
+    battle' items = (cost, round)
+      where 
+        [cost, damg, armr] = map sum $ transpose items
+        round = battle p1 {damp=damg, armorp=armr} p2
+
+battle :: Player -> Player -> Score
+battle Player{hp=hp1, damp=damg, armorp=armr}
+       Player{hp=hp2, damp=damP2, armorp=armrP2}
+       = (finalHp1, finalHp2)
+  where
     (finalHp1, finalHp2, _) = fromJust $ find aWinner $ iterate battle' (hp1, hp2, True)
     [p1Dmg, p2Dmg] = map (max 1) [damP2 - armr, damg - armrP2]
     aWinner (a, b, _) = a <= 0 || b <= 0

@@ -22,13 +22,7 @@ wire w (circuits, _) = Map.lookup w $ circuits
 
 addCircuit :: BoardCmd -> CircuitBoard -> CircuitBoard
 addCircuit cmd (c, p) = reEval c [] (cmd:p)
---addCircuit cmd (c, p) = foldl reeval (c, []) (cmd:p)
   where
-    --reeval (circ, failing) cmd = check $ apply cmd circ
-    --  where
-    --    check (Just circ) = (circ, failing)
-    --    check Nothing     = (circ, cmd:failing)
-
     reEval circ failing [] = (circ, failing)
     reEval circ failing (cmd:xs) = 
       case apply cmd circ of
