@@ -19,9 +19,8 @@ main = hspec spec
 spec :: Spec
 spec = do
 
-  context "escaping strings" $ do
-    describe "Escapes a string" $ do
-
+  context "Part A - Escaping strings" $ do
+    describe "escape" $ do
       it "Returns the same string when nothing to escape" $ do
         escape "abc" `shouldBe` "abc"
 
@@ -34,7 +33,7 @@ spec = do
       it "Returns a char by hex number" $ do
         escape "aa\\x26" `shouldBe` "aa\x26"
 
-    describe "Calculates the difference of string length and memory represenation" $ do
+    describe "escapeDiff" $ do
 
       it "Returns 0 for empty string" $ do
         escapeDiff "" `shouldBe` 2
@@ -59,18 +58,27 @@ spec = do
         let total = sum $ map escapeDiff $ lines contents
         total `shouldBe` 1350
 
-
-  context "Encdoding strings" $ do
+  context "Part B - Encoding strings" $ do
     describe "Encoding" $ do
       it "Encodes empty string to six characters" $ do
-        encode "" `shouldBe` "\"\""
+        encodeCount "\"\"" `shouldBe` 6 -- "\"\""
 
       it "Encodes letters to same letters" $ do
-        encode "abc" `shouldBe` "\"abc\""
+        encodeCount "\"abc\"" `shouldBe` 9 -- "\"abc\""
 
       it "Encodes double quotes" $ do
-        encode "aaa\"aaa" `shouldBe` "\"aaa\\\"aaa\""
+        encodeCount "\"aaa\\\"aaa\"" `shouldBe` 16 -- "\"aaa\\\"aaa\""
 
       it "Encodes heaxa chars" $ do
-        encode "\\x27" `shouldBe` "\"\\\\x27\""
+        encodeCount "\"\\x27\"" `shouldBe` 11 -- "\"\\\\x27\""
+
+    describe "Difference reading form the file" $ do
+
+      it "Calculates the difference of encoding and representation" $ do
+        contents <- readFile "test/day8.input.txt"
+        let total = sum $ map escape2Diff $ lines contents
+        let total1 = sum $ map encodeCount $ lines contents
+        -- map (print . encodeCount) $ lines contents
+        total1 `shouldBe` 8280
+        total `shouldBe` 2085
 
