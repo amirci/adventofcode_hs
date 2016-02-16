@@ -77,8 +77,5 @@ spec = do
       it "Calculates the difference of encoding and representation" $ do
         contents <- readFile "test/day8.input.txt"
         let total = sum $ map escape2Diff $ lines contents
-        let total1 = sum $ map encodeCount $ lines contents
-        -- map (print . encodeCount) $ lines contents
-        total1 `shouldBe` 8280
         total `shouldBe` 2085
 
