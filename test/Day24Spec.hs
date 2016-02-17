@@ -23,7 +23,25 @@ spec = do
     let presents = [1..5] ++ [7..11]
 
     describe "using the sample" $ do
+      it "calculates the minimum quantum" $ do
+        minQ presents 3 `shouldBe` 99
 
-      it "calculates the first" $ do
-        let (len, qtum) = groups presents
-        len `shouldBe` 2
+    describe "using the input file" $ do
+      it "calculates the minimum quantum" $ do
+        contents <- readFile "test/day24.input.txt"
+        let presents = map (read::String->Int) $ lines contents
+        minQ presents 3 `shouldBe` 11266889531
+
+  context "Part B - Four sections (including trunk)" $ do
+    let presents = [1..5] ++ [7..11]
+
+    describe "using the sample" $ do
+      it "calculates the minimum quantum" $ do
+        minQ presents 4 `shouldBe` 44
+
+    describe "using the input file" $ do
+      it "calculates the minimum quantum" $ do
+        contents <- readFile "test/day24.input.txt"
+        let presents = map (read::String->Int) $ lines contents
+        minQ presents 4 `shouldBe` 77387711
+

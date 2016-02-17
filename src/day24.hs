@@ -2,6 +2,7 @@ module Day24 where
 
 import Data.List
 import Control.Monad
+import Data.Ord
 
 type Quantum = Int
 type Quantity = Int
@@ -9,26 +10,24 @@ type Section = (Quantity, Quantum)
 type Partition = [[Present]]
 type Present = Int
 
-groups :: [Int] -> Section
-groups presents = (0, 0) -- head $ sort $ map section $ partitions presents
+minQ :: [Int] -> Int -> Quantum
+minQ presents pts = minimum $ map product $ filter ((== min) . length) $ partitions
   where
-    section xs = (ml, quantum)
+    weight = sum presents
+    secWeight = weight `div` pts
+    partitions = filter ((==) secWeight . sum) $ subsequences presents
+    min = length $ minimumBy (comparing length) partitions
+
+-- finds num partitions matching weight (not necessary)
+findPt :: [Present] -> Int -> Int -> [Partition]
+findPt presents weight num 
+  | num == 1 = [partitions]
+  | otherwise = concatMap findRest partitions
+  where
+    sameSet a b = (sort . concat) a == (sort . concat) b
+    partitions = filter ((==) weight . sum) $ subsequences presents
+    findRest part = nubBy sameSet $ zipWith (:) (repeat part) found
       where 
-        quantum = product $ map sum xs
-        ml = minimum $ map length xs
+        diff = presents \\ part
+        found = findPt diff weight (num-1)
     
-partitions :: [Present] -> [Partition]    
-partitions presents = filter isValid allp
-  where
-    isValid = valid presents
-    allp = [[i, j, k] | i<-pset, j<-pset, k<-pset]
-    pset = subsequences presents
-
-valid :: [Present] -> Partition -> Bool
-valid presents pt = allSame pt && sameSets pt
-  where
-    allSame xs = sameSum $ map sum xs
-    sameSum xs = and $ map (== head xs) (tail xs)
-    sameSets xs = same' presents $ concat xs
-    same' a b = sort a == sort b
-

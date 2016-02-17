@@ -18,7 +18,7 @@ spec = do
 
   describe "playing game" $ do
 
-    let myself = Player { hp=100, armor=0 }
+    let myself = Player { hp=100, armor=0, dmg=0 }
     let boss   = Player { hp=55 , armor=0, dmg=8 }
 
     it "plays a round" $ do
