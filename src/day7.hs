@@ -11,45 +11,48 @@ import qualified Data.Map as Map
 type Value = Word16
 type Circuit = String
 type BoardCmd = String
-type CircuitMap = Map.Map Circuit Value
-type CircuitBoard = (CircuitMap, [BoardCmd])
+type CircuitBoard = Map.Map Circuit Value
 
 mkBoard :: CircuitBoard
-mkBoard = (Map.empty, [])
+mkBoard = Map.empty
 
 wire :: Circuit -> CircuitBoard -> Maybe Value
-wire w (circuits, _) = Map.lookup w $ circuits 
+wire = Map.lookup
 
-addCircuit :: BoardCmd -> CircuitBoard -> CircuitBoard
-addCircuit cmd (c, p) = reEval c [] (cmd:p)
+run :: [BoardCmd] -> CircuitBoard -> CircuitBoard
+run cmds board = untilNoCmdIsPending $ iterate run' (board, pending)
   where
-    reEval circ failing [] = (circ, failing)
-    reEval circ failing (cmd:xs) = 
-      case apply cmd circ of
-        Just circ -> reEval circ [] (failing ++ xs)
-        Nothing   -> reEval circ (failing ++ [cmd]) xs
+    untilNoCmdIsPending = fst . fromJust . find (null . snd)
+    pending = map parse cmds
+    run' (cb, pending) = foldl run'' (cb, []) pending
+    run'' (cb, failed) cmd = 
+      case cmd cb of
+        Just board -> (board, failed)
+        Nothing    -> (cb, cmd:failed)
 
-
-apply :: BoardCmd -> CircuitMap -> Maybe CircuitMap
-apply cmd circ = update <$> parse tokens
+parse :: BoardCmd -> (CircuitBoard -> Maybe CircuitBoard)
+parse cmd = assign target $ parse' tokens
   where
     tokens = splitOn " " cmd
-    targetWire = last tokens
-    wire x = Map.lookup x circ
-    maxVal = (maxBound :: Word16) + 1
+    target = last tokens
 
-    update val = Map.insert targetWire val circ
-      
-    parse (x:"->":c:[])            = wireOrValue x
-    parse ("1":"AND":x:"->":c:[])  = (.&. 1) <$> wire x
-    parse (x:"AND":y:"->":c:[])    = (.&.)  <$> wire x <*> wire y 
-    parse (x:"OR":y:"->":c:[])     = (.|.)  <$> wire x <*> wire y 
-    parse (x:"LSHIFT":v:"->":c:[]) = shiftL <$> wire x <*> (readMaybe v :: Maybe Int)
-    parse (x:"RSHIFT":v:"->":c:[]) = shiftR <$> wire x <*> (readMaybe v :: Maybe Int)
-    parse ("NOT":x:"->":c:[])      = ((+) maxVal . complement) <$> wire x 
-    parse _ = Nothing
+    assign target fn board = update <$> fn board
+      where
+        update val = Map.insert target val board
 
-    wireOrValue val = case (readMaybe val :: Maybe Value) of
+    expr val board = case (readMaybe val :: Maybe Value) of
       Just num -> Just num
-      Nothing  -> wire val
+      Nothing  -> wire val board
+
+    binFn fn x y board = fn <$> expr x board <*> expr y board
+
+    parse' [x, "->"    , c]          = expr x
+    parse' [x, "AND"   , y, "->", c] = binFn (.&.) x y
+    parse' [x, "OR"    , y, "->", c] = binFn (.|.) x y
+    parse' [x, "LSHIFT", v, "->", c] = \board -> shiftL <$> expr x board <*> (readMaybe v :: Maybe Int)
+    parse' [x, "RSHIFT", v, "->", c] = \board -> shiftR <$> expr x board <*> (readMaybe v :: Maybe Int)
+    parse' ["NOT", x, "->", c]       = \board -> ((+) maxVal . complement) <$> wire x board 
+      where maxVal = (maxBound :: Word16) + 1
+    parse' _ = \board -> Nothing
+
 

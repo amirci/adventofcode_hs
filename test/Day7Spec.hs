@@ -18,7 +18,6 @@ main = hspec spec
 
 spec :: Spec
 spec = do
-  let circuitAdd = flip addCircuit
 
   describe "Simple circuit" $ do
     let inst = [ "123 -> x"
@@ -31,7 +30,7 @@ spec = do
                 , "NOT y -> i" 
                 ]
 
-    let board = foldl circuitAdd mkBoard inst
+    let board = run inst mkBoard
 
     let expects = [("h", 65412), ("i", 65079), ("g", 114),("f", 492),("d", 72),("e", 507),("x", 123), ("y", 456)]
 
@@ -41,7 +40,7 @@ spec = do
 
   describe "Delayed circuit" $ do
     let inst = [ "lx -> a", "456 -> lx"]
-    let board = foldl circuitAdd mkBoard inst
+    let board = run inst mkBoard
 
     it "Assigns a after is set" $ do
       wire "a" board `shouldBe` Just 456
@@ -49,14 +48,14 @@ spec = do
   describe "Circuit from file" $ do
     it "Calculates the a wire" $ do
       contents <- readFile "test/day7.input.txt"
-      let board = foldl circuitAdd mkBoard $ lines contents
+      let board = run (lines contents) mkBoard
       wire "a" board `shouldBe` Just 46065
 
   describe "Circuit from file replacing b" $ do
     it "Calculates the a wire" $ do
       contents <- readFile "test/day7.input.txt"
-      let replaceB cmd = if "-> b" `isSuffixOf` cmd then "46065 -> b" else cmd
-      let resetWireB board cmd = addCircuit (replaceB cmd) board
-      let board = foldl resetWireB mkBoard $ lines contents
+      let resetB cmd = if "-> b" `isSuffixOf` cmd then "46065 -> b" else cmd
+      let cmds = map resetB $ lines contents
+      let board = run cmds mkBoard
       wire "a" board `shouldBe` Just 14134
 

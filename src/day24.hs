@@ -10,7 +10,7 @@ type Partition = [[Present]]
 type Present = Int
 
 groups :: [Int] -> Section
-groups presents = head $ sort $ map section $ partitions presents
+groups presents = (0, 0) -- head $ sort $ map section $ partitions presents
   where
     section xs = (ml, quantum)
       where 
