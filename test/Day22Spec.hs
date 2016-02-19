@@ -16,10 +16,25 @@ main = hspec spec
 spec :: Spec
 spec = do
 
-  describe "playing game" $ do
+  context "Part A - least amount of mana to win" $ do
 
-    let myself = Player { hp=100, armor=0, dmg=0 }
-    let boss   = Player { hp=55 , armor=0, dmg=8 }
+    describe "playing game" $ do
+      -- Player turn 
+      -- - Player has 10 hit points, 0 armor, 250 mana
+      -- - Boss has 14 hit points
+      -- Player casts Recharge.
+      it "casts Recharge" $ do
+        let me = Player 10 0 250 0
+        let boss = Boss 13 8 
+        let poison = spell "Poison"
+        let round1@(m1, b1) = cast (me, boss) $ poison
+        m1 `shouldBe` me {mana=250-cost poison, spent=cost poison}
+        b1 `shouldBe` boss
 
-    it "plays a round" $ do
-      play myself boss [] `shouldBe` (1, 0)
+
+    --context "using input file" $ do
+    --  let boss = Boss { bp=55, damage=8 }
+    --  let me   = Player { hp=50, mana=500, armor=0 }
+
+    --  it "finds the least amount of mana to win" $ do
+    --    

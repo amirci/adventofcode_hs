@@ -37,8 +37,7 @@ parse cmd = assign target $ parse' tokens
     target = last tokens
 
     assign target fn board = update <$> fn board
-      where
-        update val = Map.insert target val board
+      where update val = Map.insert target val board
 
     expr val board = case (readMaybe val :: Maybe Value) of
       Just num -> Just num
